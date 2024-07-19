@@ -1,0 +1,11 @@
+# Keeping token safe
+bot/bot_token.py
+
+# Ignoring python caches
+__pycache__/
+
+# Ignoring logs
+logs/
+
+# Ignoging Visual Studio files
+.vs/
