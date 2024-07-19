@@ -39,7 +39,7 @@ NIASupportBot is a Telegram bot designed to provide motivational phrases and oth
 4. **Set up your bot token:**
     - Create a file named `bot_token.py` in the root directory and add your bot token:
     ```python
-    NIA_SUPPORT_BOT_TOKEN = 'YOUR_TELEGRAM_BOT_TOKEN'
+    BOT_TOKEN = 'YOUR_TELEGRAM_BOT_TOKEN'
     ```
 
 ## Usage
