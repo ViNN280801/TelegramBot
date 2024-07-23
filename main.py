@@ -30,9 +30,9 @@ def main() -> None:
     try:
         application = Application.builder().token(NIA_SUPPORT_BOT_TOKEN).build()
 
-        my_bot = NIASupportBot(application, "resources/phrases.txt")
+        img_dirs = ["resources/imgs/motivation/"]
+        my_bot = NIASupportBot(application, "resources/phrases.txt", img_dirs)
         my_bot.register_handlers()
-
         application.run_polling()
 
     except Exception as e:

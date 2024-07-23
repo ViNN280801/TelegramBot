@@ -1,12 +1,14 @@
+import os
 import logging
-from telegram import Update, KeyboardButton, ReplyKeyboardMarkup
+from random import choice
+from telegram import Update, KeyboardButton, ReplyKeyboardMarkup, InputFile
 from telegram.ext import CommandHandler, MessageHandler, ContextTypes, filters
 from telegram.error import NetworkError, TelegramError
 from utils import load_phrases_from_file, get_random_phrase
 
 
 class NIASupportBot:
-    def __init__(self, application, phrases_filename: str):
+    def __init__(self, application, phrases_filename: str, img_dirs: list):
         """
         Initialize the bot with the given application and load phrases from file.
 
@@ -15,6 +17,7 @@ class NIASupportBot:
         """
         self.application = application
         self.phrases = load_phrases_from_file(phrases_filename)
+        self.img_dirs = img_dirs
         self.is_started = False  # Track if the bot is started
 
     def get_username(self, user) -> str:
@@ -53,7 +56,7 @@ class NIASupportBot:
         user = update.effective_user
         username = self.get_username(user)
         self.is_started = True
-        
+
         try:
             # Create a custom keyboard with "Фраза" and "Картинка" buttons
             custom_keyboard = [[KeyboardButton("Фраза"), KeyboardButton("Картинка")]]
@@ -114,10 +117,35 @@ class NIASupportBot:
         username = self.get_username(user)
 
         try:
-            await update.message.reply_text("Функция 'Картинка' пока не реализована.")
+            # Collect all image files from the provided directories
+            img_files = []
+            for directory in self.img_dirs:
+                img_files.extend(
+                    [
+                        os.path.join(directory, f)
+                        for f in os.listdir(directory)
+                        if os.path.isfile(os.path.join(directory, f))
+                    ]
+                )
+
+            if not img_files:
+                await update.message.reply_text("No images found in the directories.")
+                return
+
+            # Select a random file
+            random_img = choice(img_files)
+
+            # Log the image path
+            logging.info(f"Sending image: {random_img}")
+
+            # Read the image as bytes
+            with open(random_img, "rb") as img_file:
+                await update.message.reply_photo(photo=img_file)
+
             logging.info(
-                f"User {username}) requested an image."
+                f"User {username} requested an image. Sent image: {random_img}"
             )
+
         except TelegramError as e:
             logging.error(f"Telegram error: {e}")
             await update.message.reply_text(
@@ -137,10 +165,8 @@ class NIASupportBot:
         user = update.effective_user
         username = self.get_username(user)
         message = update.message.text
-        
-        logging.info(
-            f"Received message from user {username}: {message}"
-        )
+
+        logging.info(f"Received message from user {username}: {message}")
 
         # Delegate to specific handlers
         if message == "Фраза":
