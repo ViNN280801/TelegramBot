@@ -1,6 +1,3 @@
-# Keeping token safe
-bot/bot_token.py
-
 # Ignoring python caches
 __pycache__/
 
